@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+
+# Data (büyük dosyalar repoya girmez)
+data/raw/
+data/processed/
+*.h5
+*.hdf5
+*.pt
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Weights & Biases
+wandb/
+
+# Model checkpoints
+checkpoints/
+*.ckpt
+*.pth
