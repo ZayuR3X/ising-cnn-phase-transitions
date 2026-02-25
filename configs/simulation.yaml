@@ -1,0 +1,79 @@
+# configs/simulation.yaml
+# Metropolis-Hastings CA dataset generation parameters
+
+simulation:
+  # Lattice sizes to simulate
+  lattice_sizes: [32, 64, 128]
+
+  # Exchange coupling constant
+  J: 1.0
+
+  # Onsager critical temperature for J=1 (reference)
+  # Tc = 2J / ln(1 + sqrt(2)) = 2.2692
+  Tc_onsager: 2.2692
+
+  # ---------------------------------------------------------------
+  # Temperature grids
+  # ---------------------------------------------------------------
+  temperature:
+    # Coarse grid: away from critical region
+    coarse:
+      T_min: 1.0
+      T_max: 3.5
+      step: 0.05
+
+    # Dense grid: near critical region
+    dense:
+      T_min: 2.0
+      T_max: 2.6
+      step: 0.01
+
+  # ---------------------------------------------------------------
+  # Monte Carlo parameters
+  # ---------------------------------------------------------------
+  mc:
+    # Thermalization sweeps (away from Tc)
+    n_thermalize: 10000
+
+    # Thermalization sweeps near Tc (|T - Tc| < critical_window)
+    n_thermalize_critical: 50000
+
+    # Temperature window around Tc that triggers extended thermalization
+    critical_window: 0.3
+
+    # Independent samples per temperature point
+    n_samples: 500
+
+    # Sweeps between samples (will be overridden by 2*tau_int if autocorr module available)
+    # Default conservative spacing
+    spacing_default: 20
+
+    # Autocorrelation estimation: number of sweeps for tau_int measurement
+    n_autocorr_sweeps: 5000
+
+  # ---------------------------------------------------------------
+  # Initialization
+  # ---------------------------------------------------------------
+  init:
+    # "random" (hot start) or "ordered" (cold start)
+    # hot start recommended for T > Tc, cold start for T < Tc
+    strategy: "random"
+
+  # ---------------------------------------------------------------
+  # Output
+  # ---------------------------------------------------------------
+  output:
+    # HDF5 file path (relative to project root)
+    path: "data/raw/J1_L{L}_snapshots.h5"
+
+    # Save physics observables alongside snapshots
+    save_observables: true
+
+    # Compress HDF5 datasets
+    compression: "gzip"
+    compression_opts: 4
+
+  # ---------------------------------------------------------------
+  # Reproducibility
+  # ---------------------------------------------------------------
+  seed: 42

@@ -1,0 +1,83 @@
+# configs/model.yaml
+# CNN architecture and training hyperparameters
+
+model:
+  name: "IsingCNN"
+
+  # Input configuration
+  input:
+    # 4 channels: raw spins, local energy, coarse magnetization, Fourier map
+    in_channels: 4
+    lattice_size: 64   # primary training lattice
+
+  # Architecture
+  architecture:
+    # Conv block filter sizes
+    filters: [32, 64, 128]
+    # Kernel sizes per block
+    kernels: [3, 3, 3]
+    # Use circular (toroidal) padding to respect PBC
+    circular_padding: true
+    # Global physics features injected before the dense head
+    # [magnetization, susceptibility, energy, binder_U4]
+    n_physics_features: 4
+    dropout_rates: [0.3, 0.2]
+
+  # Output heads
+  heads:
+    # Binary phase classification (0=ferromagnetic, 1=paramagnetic)
+    n_classes: 2
+    # Temperature regression
+    temperature_regression: true
+
+# ---------------------------------------------------------------
+# Training
+# ---------------------------------------------------------------
+training:
+  epochs: 100
+  batch_size: 128
+  seed: 42
+
+  optimizer:
+    name: "AdamW"
+    lr: 3.0e-4
+    weight_decay: 1.0e-4
+
+  scheduler:
+    name: "CosineAnnealingWarmRestarts"
+    T_0: 10
+    T_mult: 2
+
+  # Composite loss weights
+  loss:
+    lambda_cls: 1.0     # CrossEntropy weight
+    lambda_reg: 0.5     # Temperature MSE weight
+    lambda_phys: 0.1    # Physics regularizer (penalize m != 0 above Tc)
+
+  # Early stopping
+  early_stopping:
+    patience: 15
+    monitor: "val_loss"
+
+  # Oversample critical region during training
+  critical_oversampling:
+    enabled: true
+    window: 0.3        # |T - Tc| < window
+    factor: 3          # oversample by 3x
+
+  # Data split (stratified by temperature)
+  data_split:
+    train: 0.7
+    val: 0.15
+    test: 0.15
+    # Hold out critical strip for hardest generalization test
+    critical_strip_val: true
+    critical_strip: [2.15, 2.40]
+
+# ---------------------------------------------------------------
+# Output
+# ---------------------------------------------------------------
+output:
+  checkpoint_dir: "checkpoints/"
+  best_model_path: "checkpoints/best_model.pth"
+  log_dir: "logs/"

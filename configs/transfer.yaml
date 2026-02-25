@@ -1,0 +1,62 @@
+# configs/transfer.yaml
+# Transfer learning and learning-by-confusion parameters
+
+transfer:
+  # Target system
+  target:
+    J: 2.0
+    Tc_onsager: 4.5138   # 2*2.2569 exact
+
+  # Lattice sizes for FSS extrapolation
+  lattice_sizes: [32, 64, 128]
+
+  # ---------------------------------------------------------------
+  # Pilot dataset (small J=2 dataset for confusion method)
+  # ---------------------------------------------------------------
+  pilot_dataset:
+    T_min: 3.0
+    T_max: 6.5
+    step: 0.05
+    n_samples_per_T: 50        # intentionally small
+    n_thermalize: 20000
+    spacing: 40
+    path: "data/raw/J2_L{L}_pilot.h5"
+
+  # ---------------------------------------------------------------
+  # Learning by confusion
+  # ---------------------------------------------------------------
+  confusion:
+    # Sweep range for candidate critical temperature W
+    W_min: 3.0
+    W_max: 6.5
+    n_steps: 70               # number of W values to evaluate
+
+    # Head retraining per W value
+    head_epochs: 30
+    head_lr: 1.0e-3
+    batch_size: 64
+
+    # Backbone is fully frozen during sweep
+    freeze_backbone: true
+
+    # Output
+    results_path: "data/processed/confusion_curve.npz"
+
+  # ---------------------------------------------------------------
+  # MC Dropout predictive entropy (zero-shot)
+  # ---------------------------------------------------------------
+  mc_dropout:
+    n_forward_passes: 100     # stochastic forward passes per configuration
+    dropout_rate: 0.2         # applied at inference time
+    results_path: "data/processed/entropy_curve.npz"
+
+  # ---------------------------------------------------------------
+  # Finite-size scaling extrapolation
+  # ---------------------------------------------------------------
+  fss:
+    # Critical exponent nu (2D Ising, fixed)
+    nu: 1.0
+    # Fit Tc(L) = Tc_inf + a * L^{-1/nu}
+    results_path: "data/processed/fss_extrapolation.npz"
+
+  seed: 42
