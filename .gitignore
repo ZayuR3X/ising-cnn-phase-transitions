@@ -31,3 +31,6 @@ wandb/
 checkpoints/
 *.ckpt
 *.pth
+
+#log files
+/logs
