@@ -63,7 +63,7 @@ def main():
         critical_oversample_factor = tr["critical_oversampling"]["factor"],
         augment          = True,
         spin_flip        = True,
-        num_workers      = 2,
+        num_workers      = 0,   # 0 = main process only, faster on CPU
         seed             = tr["seed"],
     )
 

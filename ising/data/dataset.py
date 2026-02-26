@@ -178,7 +178,7 @@ def make_dataloaders(
     critical_oversample_factor: int = 3,
     augment: bool = True,
     spin_flip: bool = True,
-    num_workers: int = 2,
+    num_workers: int = 0,
     seed: int = 42,
 ) -> Tuple[DataLoader, DataLoader, DataLoader]:
     """
